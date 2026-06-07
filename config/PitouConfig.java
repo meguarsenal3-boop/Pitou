@@ -125,6 +125,11 @@ public class PitouConfig {
         public final ForgeConfigSpec.IntValue blytheAnchorRange;
         public final ForgeConfigSpec.IntValue blythePlayerLeash;
         public final ForgeConfigSpec.DoubleValue blytheBaseHealPerSecond;
+        public final ForgeConfigSpec.DoubleValue blytheHealMax;
+        public final ForgeConfigSpec.IntValue blytheHealIntervalTicks;
+        public final ForgeConfigSpec.DoubleValue blytheMasteryMax;
+        public final ForgeConfigSpec.DoubleValue blytheMasteryGainPerHeal;
+        public final ForgeConfigSpec.IntValue blytheSlownessLevel;
 
         // ---------------- TERPSICHORA ----------------
         public final ForgeConfigSpec.IntValue terpsichoraDashRange;
@@ -165,11 +170,11 @@ public class PitouConfig {
             paranoiaFlickMaxDeg = b.comment("Tamanho maximo (graus) da flickada de paranoia no nivel 4.")
                     .defineInRange("paranoiaFlickMaxDeg", 6.0, 0.0, 90.0);
             fallDamageMultiplier = b.comment("Multiplicador do dano de queda. 0.0 = imune, 1.0 = normal.")
-                    .defineInRange("fallDamageMultiplier", 0.1, 0.0, 1.0);
+                    .defineInRange("fallDamageMultiplier", 0.0, 0.0, 1.0);
             clawDamageMultiplier = b.comment("Multiplicador do dano melee com garras expostas.")
                     .defineInRange("clawDamageMultiplier", 2.0, 1.0, 10.0);
             chargedJumpMaxMultiplier = b.comment("Forca maxima do pulo carregado (shift segurado).")
-                    .defineInRange("chargedJumpMaxMultiplier", 8.0, 1.0, 20.0);
+                    .defineInRange("chargedJumpMaxMultiplier", 15.0, 1.0, 20.0);
             chargedJumpMaxHoldTicks = b.comment("Tempo (ticks) de carga ate o pulo chegar no maximo.")
                     .defineInRange("chargedJumpMaxHoldTicks", 200, 1, 200);
             chargedJumpCooldownTicks = b.comment("Cooldown (ticks) apos um pulo carregado. 60 = 3s.")
@@ -185,7 +190,7 @@ public class PitouConfig {
             jumpHitMultiplier = b.comment("Multiplicador de dano quando o dash do pulo acerta um mob na trajetoria. 2.0 = 2x.")
                     .defineInRange("jumpHitMultiplier", 2.0, 0.0, 100.0);
             chargedJumpBaseSpeed = b.comment("Velocidade base do salto carregado (na carga minima). Escala ate o max multiplier.")
-                    .defineInRange("chargedJumpBaseSpeed", 0.9, 0.1, 10.0);
+                    .defineInRange("chargedJumpBaseSpeed", 2, 0.1, 10.0);
             baseJumpBonus = b.comment("Bonus de altura no pulo NORMAL (sem shift). Velocidade Y extra adicionada.")
                     .defineInRange("baseJumpBonus", 0.18, 0.0, 5.0);
             speedBonus = b.comment("Bonus de velocidade de movimento (multiplicador). 0.4 = +40%. Some na agua.")
@@ -252,7 +257,7 @@ public class PitouConfig {
             huntKillBuffDurationTicks = b.comment("Duracao (ticks) do buff de caca. 200 = 10s.")
                     .defineInRange("huntKillBuffDurationTicks", 200, 1, 24000);
             huntFlickIntervalTicks = b.comment("Intervalo (ticks) entre flicks de camera na direcao do ser forte (distracao).")
-                    .defineInRange("huntFlickIntervalTicks", 60, 1, 1200);
+                    .defineInRange("huntFlickIntervalTicks", 200, 1, 1200);
             b.pop();
 
             b.comment("Nen: Ten/Ren/Ryu/En/Ko. Por enquanto so En e parametros gerais.").push("nen");
@@ -328,11 +333,21 @@ public class PitouConfig {
 
             b.comment("Hatsu: Doctor Blythe (cura presa pela boneca).").push("hatsu");
             blytheAnchorRange = b.comment("Distancia maxima (blocos) que o alvo curado pode se afastar do spawn da boneca.")
-                    .defineInRange("blytheAnchorRange", 20, 1, 128);
+                    .defineInRange("blytheAnchorRange", 3, 1, 128);
             blythePlayerLeash = b.comment("Distancia maxima (blocos) que a Pitou pode ficar da boneca.")
-                    .defineInRange("blythePlayerLeash", 10, 1, 128);
-            blytheBaseHealPerSecond = b.comment("Cura base por segundo (antes do bonus de maestria).")
+                    .defineInRange("blythePlayerLeash", 20, 1, 128);
+            blytheBaseHealPerSecond = b.comment("Cura por intervalo com 0 de maestria (cura minima).")
                     .defineInRange("blytheBaseHealPerSecond", 2.0, 0.0, 1000.0);
+            blytheHealMax = b.comment("Cura por intervalo no MAXIMO de maestria (cap da cura).")
+                    .defineInRange("blytheHealMax", 10.0, 0.0, 10000.0);
+            blytheHealIntervalTicks = b.comment("De quantos em quantos ticks a boneca cura. 20 = 1s.")
+                    .defineInRange("blytheHealIntervalTicks", 20, 1, 1200);
+            blytheMasteryMax = b.comment("Maestria pra cura chegar no cap. Cresce com o uso.")
+                    .defineInRange("blytheMasteryMax", 24000.0, 1.0, 1.0E9);
+            blytheMasteryGainPerHeal = b.comment("Maestria ganha a cada cura aplicada.")
+                    .defineInRange("blytheMasteryGainPerHeal", 20.0, 0.0, 1.0E6);
+            blytheSlownessLevel = b.comment("Nivel de Slowness em quem esta sendo curado. 3 = Slowness III.")
+                    .defineInRange("blytheSlownessLevel", 3, 1, 10);
             b.pop();
 
             b.comment("Terpsichora: forma final + Volta da Morte.").push("terpsichora");
