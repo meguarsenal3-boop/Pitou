@@ -42,6 +42,11 @@ public class TailLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Abs
     private static final double ANCHOR_Y = 0.0D;
     private static final double ANCHOR_Z = 0.10D;
 
+    // inflar da aura do rabo. Era 1.1, que erguia a casca ~0.2 bloco (a escala empurra
+    // a ponta do rabo pra cima a partir da origem). Baixo o suficiente pra colar no
+    // rabo sem z-fighting.
+    private static final float AURA_INFLATE = 1.02F;
+
     private final GeoObjectRenderer<Tail> renderer;
 
     public TailLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent) {
@@ -71,7 +76,7 @@ public class TailLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Abs
         // aura vermelha no rabo quando o player local esta cacando
         if (player == Minecraft.getInstance().player && HuntClientState.targetId >= 0) {
             poseStack.pushPose();
-            poseStack.scale(1.1F, 1.1F, 1.1F);
+            poseStack.scale(AURA_INFLATE, AURA_INFLATE, AURA_INFLATE);
             RenderType aura = RenderType.entityTranslucentEmissive(AuraRenderHandler.AURA_RED);
             renderer.render(poseStack, Tail.INSTANCE, buffer, aura, buffer.getBuffer(aura), packedLight);
             poseStack.popPose();

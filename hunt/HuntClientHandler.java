@@ -75,7 +75,8 @@ public class HuntClientHandler {
                 && player.getY() >= cfg.strongPreyVisionMinY.get();
 
         // --- distracao: flicka a camera para o alvo (creeper tem prioridade) ---
-        if (targetId == -1 || mc.screen != null || creeperNearby(mc, player)) {
+        // perto do Rei a Pitou nao se distrai: mantem o som/HUD, mas a camera nao flicka
+        if (targetId == -1 || mc.screen != null || creeperNearby(mc, player) || isKingNear(player)) {
             flickCooldown = 0;
             return;
         }
@@ -144,5 +145,9 @@ public class HuntClientHandler {
 
     private static boolean isTransformed(Player p) {
         return PitouCapability.get(p).resolve().map(PitouData::isTransformed).orElse(false);
+    }
+
+    private static boolean isKingNear(Player p) {
+        return PitouCapability.get(p).resolve().map(PitouData::isKingNear).orElse(false);
     }
 }

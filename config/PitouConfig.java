@@ -183,10 +183,10 @@ public class PitouConfig {
                     .defineInRange("chargedDashMinChargeFraction", 0.3, 0.0, 1.0);
             chargedDashDurationTicks = b.comment("Duracao (ticks) do dash sustentado do pulo carregado.")
                     .defineInRange("chargedDashDurationTicks", 8, 1, 100);
-            chargedDashForwardBlocks = b.comment("Alcance horizontal (blocos) do dash na carga maxima, olhando reto pra frente.")
-                    .defineInRange("chargedDashForwardBlocks", 30.0, 1.0, 200.0);
+            chargedDashForwardBlocks = b.comment("Alcance horizontal (blocos) do dash na carga maxima, olhando reto pra frente. O dash estende a duracao sozinho pra distancias grandes nao serem barradas pelo servidor.")
+                    .defineInRange("chargedDashForwardBlocks", 500.0, 1.0, 2000.0);
             chargedDashUpwardBlocks = b.comment("Alcance vertical (blocos) do dash na carga maxima, olhando reto pra cima.")
-                    .defineInRange("chargedDashUpwardBlocks", 15.0, 1.0, 200.0);
+                    .defineInRange("chargedDashUpwardBlocks", 300.0, 1.0, 2000.0);
             jumpHitMultiplier = b.comment("Multiplicador de dano quando o dash do pulo acerta um mob na trajetoria. 2.0 = 2x.")
                     .defineInRange("jumpHitMultiplier", 2.0, 0.0, 100.0);
             chargedJumpBaseSpeed = b.comment("Velocidade base do salto carregado (na carga minima). Escala ate o max multiplier.")
