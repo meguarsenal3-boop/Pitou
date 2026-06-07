@@ -71,6 +71,12 @@ public class CreeperClientHandler {
 
         GlowManager.setRequest(GLOW_SOURCE, glow);
 
+        // perto do Rei a Pitou nao se distrai: mantem o destaque, mas a camera nao flicka
+        if (isKingNear(player)) {
+            flickCooldown = 0;
+            return;
+        }
+
         // ---------------- flick de camera ----------------
         if (nearest == null) {
             flickCooldown = 0; // rearma para flickar quando um aparecer
@@ -104,5 +110,9 @@ public class CreeperClientHandler {
 
     private static boolean isTransformed(Player p) {
         return PitouCapability.get(p).resolve().map(PitouData::isTransformed).orElse(false);
+    }
+
+    private static boolean isKingNear(Player p) {
+        return PitouCapability.get(p).resolve().map(PitouData::isKingNear).orElse(false);
     }
 }
