@@ -38,6 +38,13 @@ public class IdentityClientHandler {
     private static int dashTicksLeft = 0;
     private static Vec3 dashVelocity = Vec3.ZERO;
 
+    // Velocidade maxima por tick (blocos) que o servidor aceita sem acusar
+    // "moved too quickly" e teleportar o player de volta (= "o pulo nao funciona").
+    // O limite vanilla e ~10 blocos/tick; 7.0 deixa folga. Dashes longos (ex.: 500
+    // blocos) so duram MAIS ticks em vez de serem barrados, percorrendo a distancia
+    // inteira de verdade.
+    private static final double MAX_TICK_SPEED = 7.0;
+
     // cooldown apos um pulo carregado + deteccao de movimento horizontal
     private static int cooldownLeft = 0;
     private static double prevX, prevZ;
@@ -127,13 +134,19 @@ public class IdentityClientHandler {
                 double minFrac = cfg().chargedDashMinChargeFraction.get();
                 double eff = minFrac + (1.0 - minFrac) * ratio;
 
-                double duration = Math.max(1, cfg().chargedDashDurationTicks.get());
-                double perTickH = (cfg().chargedDashForwardBlocks.get() * eff) / duration;
-                double perTickV = (cfg().chargedDashUpwardBlocks.get() * eff) / duration;
+                double distH = cfg().chargedDashForwardBlocks.get() * eff;
+                double distV = cfg().chargedDashUpwardBlocks.get() * eff;
 
                 Vec3 look = player.getLookAngle(); // unitario, com pitch
-                // Horizontal escala por perTickH, vertical por perTickV.
-                Vec3 v = new Vec3(look.x * perTickH, look.y * perTickV, look.z * perTickH);
+                // Deslocamento TOTAL desejado: horizontal escala por distH, vertical por distV.
+                Vec3 disp = new Vec3(look.x * distH, look.y * distV, look.z * distH);
+
+                // A duracao configurada e o MINIMO; pra distancias grandes ela se estende
+                // o quanto for preciso pra manter a velocidade por tick <= MAX_TICK_SPEED,
+                // senao o servidor barra o movimento ("moved too quickly") e o dash falha.
+                double minDuration = Math.max(1, cfg().chargedDashDurationTicks.get());
+                double duration = Math.max(minDuration, Math.ceil(disp.length() / MAX_TICK_SPEED));
+                Vec3 v = disp.scale(1.0 / duration);
 
                 dashVelocity = v;
                 dashTicksLeft = (int) duration;
