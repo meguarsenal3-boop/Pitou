@@ -3,10 +3,12 @@ package com.megu.neferpitou.client.anim;
 import com.megu.neferpitou.Neferpitou;
 import com.megu.neferpitou.capability.PitouCapability;
 import com.megu.neferpitou.capability.PitouData;
+import dev.kosmx.playerAnim.api.TransformType;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import dev.kosmx.playerAnim.core.util.Vec3f;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import net.minecraft.client.Minecraft;
@@ -35,6 +37,10 @@ public final class PitouAnimationClient {
     private static final ResourceLocation SIT_ID = new ResourceLocation(Neferpitou.MODID, "sitting");
     private static final ResourceLocation JUMP_ID = new ResourceLocation(Neferpitou.MODID, "jump_charge");
     private static final int SIT_DELAY_TICKS = 100; // 5s
+    // No jump_charge a animacao toca 0 -> JUMP_HOLD_TICK e TRAVA nessa pose (a pose
+    // carregada) enquanto o pulo esta sendo segurado, em vez de tocar ate o fim e
+    // voltar pro normal. Ajuste se quiser segurar em outro frame.
+    private static final int JUMP_HOLD_TICK = 99;
 
     private enum State { NONE, SIT, JUMP }
 
@@ -95,8 +101,40 @@ public final class PitouAnimationClient {
 
         if (anim == null) {
             layer.setAnimation(null);
+        } else if (state == State.JUMP) {
+            layer.setAnimation(new HeldKeyframePlayer(anim, JUMP_HOLD_TICK));
         } else {
             layer.setAnimation(new KeyframeAnimationPlayer(anim));
+        }
+    }
+
+    /**
+     * Player de keyframes que TRAVA num tick (a pose carregada) em vez de terminar e
+     * voltar pro normal. Toca 0 -> holdTick normalmente; ao chegar no holdTick para de
+     * avancar e congela a interpolacao (tickDelta=0), segurando a pose ate a animacao
+     * ser trocada/removida (quando o player solta o pulo e o charge volta a 0).
+     */
+    private static final class HeldKeyframePlayer extends KeyframeAnimationPlayer {
+        private final int holdTick;
+
+        HeldKeyframePlayer(KeyframeAnimation anim, int holdTick) {
+            super(anim);
+            this.holdTick = holdTick;
+        }
+
+        @Override
+        public void tick() {
+            if (getCurrentTick() < holdTick) {
+                super.tick();
+            }
+        }
+
+        @Override
+        public Vec3f get3DTransform(String modelName, TransformType type, float tickDelta, Vec3f value0) {
+            if (getCurrentTick() >= holdTick) {
+                tickDelta = 0.0F; // congela na pose carregada (sem jitter entre frames)
+            }
+            return super.get3DTransform(modelName, type, tickDelta, value0);
         }
     }
 }
