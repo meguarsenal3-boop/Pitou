@@ -36,7 +36,12 @@ public final class AuraRenderHandler {
     public static final ResourceLocation AURA_RED =
             new ResourceLocation(Neferpitou.MODID, "textures/entity/aura_red.png");
 
-    public static final float INFLATE = 1.08F;     // quanto a casca cresce
+    // Quanto a "casca" da aura cresce. IMPORTANTE: como a aura e o modelo escalado no
+    // PoseStack, valores altos AFASTAM a casca do corpo durante animacoes com membros
+    // bem deslocados (sentar/pulo) -> a aura "sai do personagem". Por isso fica baixo
+    // (so o suficiente pra nao dar z-fighting com a pele). Aumente se quiser a casca
+    // mais grossa quando parado, sabendo que vai afastar mais nas animacoes grandes.
+    public static final float INFLATE = 1.02F;
     public static final float ALPHA = 0.6F;        // opacidade da aura
 
     /** Decide a cor da aura (ou null se nao tem). */
