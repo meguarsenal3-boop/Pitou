@@ -125,6 +125,11 @@ public class PitouConfig {
         public final ForgeConfigSpec.IntValue blytheAnchorRange;
         public final ForgeConfigSpec.IntValue blythePlayerLeash;
         public final ForgeConfigSpec.DoubleValue blytheBaseHealPerSecond;
+        public final ForgeConfigSpec.IntValue blytheHealIntervalTicks;
+        public final ForgeConfigSpec.DoubleValue blytheHealMax;
+        public final ForgeConfigSpec.DoubleValue blytheMasteryMax;
+        public final ForgeConfigSpec.DoubleValue blytheMasteryGainPerHeal;
+        public final ForgeConfigSpec.IntValue blytheSlownessLevel;
 
         // ---------------- TERPSICHORA ----------------
         public final ForgeConfigSpec.IntValue terpsichoraDashRange;
@@ -333,6 +338,16 @@ public class PitouConfig {
                     .defineInRange("blythePlayerLeash", 10, 1, 128);
             blytheBaseHealPerSecond = b.comment("Cura base por segundo (antes do bonus de maestria).")
                     .defineInRange("blytheBaseHealPerSecond", 2.0, 0.0, 1000.0);
+            blytheHealIntervalTicks = b.comment("Intervalo (ticks) entre cada cura. 20 ticks = 1s.")
+                    .defineInRange("blytheHealIntervalTicks", 20, 1, 12000);
+            blytheHealMax = b.comment("Cura maxima por intervalo (cap depois do bonus de maestria).")
+                    .defineInRange("blytheHealMax", 20.0, 0.0, 100000.0);
+            blytheMasteryMax = b.comment("Maestria maxima acumulavel.")
+                    .defineInRange("blytheMasteryMax", 100.0, 0.0, 100000.0);
+            blytheMasteryGainPerHeal = b.comment("Quanto de maestria ganha a cada cura.")
+                    .defineInRange("blytheMasteryGainPerHeal", 1.0, 0.0, 100000.0);
+            blytheSlownessLevel = b.comment("Nivel (amplificador) da lentidao aplicada no alvo curado. 0 = sem lentidao.")
+                    .defineInRange("blytheSlownessLevel", 1, 0, 255);
             b.pop();
 
             b.comment("Terpsichora: forma final + Volta da Morte.").push("terpsichora");
